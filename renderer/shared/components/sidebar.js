@@ -20,7 +20,7 @@ import useRpc from '../hooks/use-rpc'
 import {usePoll} from '../hooks/use-interval'
 import {Tooltip} from './tooltip'
 import {pluralize} from '../utils/string'
-import useFlips, {FlipType} from '../utils/useFlips'
+import {FlipType, useLastFlips} from '../utils/useFlips'
 
 function Sidebar() {
   return (
@@ -246,6 +246,7 @@ function ActionPanel() {
   const {syncing} = useChainState()
   const identity = useIdentityState()
   const epoch = useEpochState()
+  const {t} = useTranslation()
 
   if (syncing || !epoch) {
     return null
@@ -263,13 +264,13 @@ function ActionPanel() {
       }}
     >
       {currentPeriod !== EpochPeriod.None && (
-        <Block title="Current period">{currentPeriod}</Block>
+        <Block title={t('Current period')}>{currentPeriod}</Block>
       )}
-      <Block title="My current task">
+      <Block title={t('My current task')}>
         <CurrentTask period={currentPeriod} identity={identity} />
       </Block>
       {currentPeriod === EpochPeriod.None && (
-        <Block title="Next validation">
+        <Block title={t('Next validation')}>
           {new Date(nextValidation).toLocaleString()}
         </Block>
       )}
@@ -317,7 +318,7 @@ function CurrentTask({period, identity}) {
     longAnswers,
   } = useValidationState()
 
-  const {flips: persistedFlips} = useFlips()
+  const [persistedFlips] = useLastFlips()
 
   if (!period || !identity || !identity.state) {
     return null
